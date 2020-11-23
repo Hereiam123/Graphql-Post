@@ -1,29 +1,36 @@
 import { MikroORM } from "@mikro-orm/core";
 import { __prod__ } from "./constants";
 import microConfig from "./mikro-orm.config";
-import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { PostResolver } from "./resolvers/post";
 import { UserResolver } from "./resolvers/user";
+import express from "express";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
-import { MyContext } from "./types";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
   await orm.getMigrator().up();
-
   const app = express();
-
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
+
+  redisClient.on("connect", function () {
+    console.log("Redis Connected");
+  });
+
+  redisClient.on("error", (err) => {
+    console.log("Redis error: ", err);
+  });
 
   app.use(
     session({
       name: "qid",
       store: new RedisStore({
+        host: "localhost",
+        port: 6379,
         client: redisClient,
         disableTouch: true,
       }),
@@ -34,7 +41,7 @@ const main = async () => {
         secure: __prod__,
         sameSite: "lax",
       },
-      secret: "qwertysstring",
+      secret: "432hjkhfsdjh34h",
       resave: false,
     })
   );
@@ -44,7 +51,7 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({
+    context: ({ req, res }) => ({
       em: orm.em,
       req,
       res,

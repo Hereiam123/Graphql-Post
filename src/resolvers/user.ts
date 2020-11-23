@@ -7,6 +7,7 @@ import {
   InputType,
   Mutation,
   ObjectType,
+  Query,
   Resolver,
 } from "type-graphql";
 import argon2 from "argon2";
@@ -38,19 +39,29 @@ class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Query(() => User, { nullable: true })
+  async me(@Ctx() { em, req }: MyContext) {
+    //No user logged in
+    if (req.session.userId) {
+      return null;
+    }
+    const user = await em.findOne(User, { id: req.session.userId });
+    return user;
+  }
+
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
-    if (options.username.length <= 5) {
+    if (options.username.length <= 3) {
       return {
         errors: [
           { field: "username", message: "length needs to be greater than 5" },
         ],
       };
     }
-    if (options.password.length <= 5) {
+    if (options.password.length <= 3) {
       return {
         errors: [
           { field: "password", message: "length needs to be greater than 5" },
@@ -96,7 +107,9 @@ export class UserResolver {
       };
     }
 
-    req.session!.userId = user.id;
+    req.session.userId = user.id;
+
+    console.log(req.session);
 
     return { user };
   }
