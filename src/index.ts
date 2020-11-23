@@ -41,8 +41,10 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: () => ({
+    context: ({ req, res }) => ({
       em: orm.em,
+      req,
+      res,
     }),
   });
 
