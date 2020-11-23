@@ -62,7 +62,15 @@ export class UserResolver {
       username: options.username.toLowerCase(),
       password: hashPassword,
     });
-    await ctx.em.persistAndFlush(user);
+    try {
+      await ctx.em.persistAndFlush(user);
+    } catch (e) {
+      if (e.code === "23505" || e.detail.includes("already exists")) {
+        return {
+          errors: [{ field: "username", message: "username already in use" }],
+        };
+      }
+    }
     return { user };
   }
 
