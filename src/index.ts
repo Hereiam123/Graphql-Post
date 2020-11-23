@@ -9,6 +9,7 @@ import express from "express";
 import redis from "redis";
 import session from "express-session";
 import connectRedis from "connect-redis";
+import { MyContext } from "./types";
 
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
@@ -51,7 +52,7 @@ const main = async () => {
       resolvers: [PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }) => ({
+    context: ({ req, res }): MyContext => ({
       em: orm.em,
       req,
       res,
