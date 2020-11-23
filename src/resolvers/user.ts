@@ -42,7 +42,7 @@ export class UserResolver {
   @Query(() => User, { nullable: true })
   async me(@Ctx() { em, req }: MyContext) {
     //No user logged in
-    if (req.session.userId) {
+    if (!req.session.userId) {
       return null;
     }
     const user = await em.findOne(User, { id: req.session.userId });
@@ -107,9 +107,9 @@ export class UserResolver {
       };
     }
 
+    //Store user id session
+    //and sets cookie, keeping logged in
     req.session.userId = user.id;
-
-    console.log(req.session);
 
     return { user };
   }
