@@ -41,7 +41,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() ctx: MyContext
+    @Ctx() { em }: MyContext
   ): Promise<UserResponse> {
     if (options.username.length <= 5) {
       return {
@@ -58,12 +58,12 @@ export class UserResolver {
       };
     }
     const hashPassword = await argon2.hash(options.password);
-    const user = ctx.em.create(User, {
+    const user = em.create(User, {
       username: options.username.toLowerCase(),
       password: hashPassword,
     });
     try {
-      await ctx.em.persistAndFlush(user);
+      await em.persistAndFlush(user);
     } catch (e) {
       if (e.code === "23505" || e.detail.includes("already exists")) {
         return {
@@ -77,9 +77,9 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async login(
     @Arg("options") options: UsernamePasswordInput,
-    @Ctx() ctx: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await ctx.em.findOne(User, {
+    const user = await em.findOne(User, {
       username: options.username.toLowerCase(),
     });
 
@@ -95,6 +95,9 @@ export class UserResolver {
         errors: [{ field: "password", message: "invalid login" }],
       };
     }
+
+    req.session!.userId = user.id;
+
     return { user };
   }
 }

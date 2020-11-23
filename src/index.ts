@@ -14,6 +14,7 @@ import { MyContext } from "./types";
 const main = async () => {
   const orm = await MikroORM.init(microConfig);
   await orm.getMigrator().up();
+
   const app = express();
 
   const RedisStore = connectRedis(session);
@@ -26,6 +27,7 @@ const main = async () => {
         client: redisClient,
         disableTouch: true,
       }),
+      saveUninitialized: false,
       cookie: {
         maxAge: 1000 * 60 * 60 * 24 * 365 * 10,
         httpOnly: true,
