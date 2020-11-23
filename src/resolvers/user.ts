@@ -43,6 +43,20 @@ export class UserResolver {
     @Arg("options") options: UsernamePasswordInput,
     @Ctx() ctx: MyContext
   ): Promise<UserResponse> {
+    if (options.username.length <= 5) {
+      return {
+        errors: [
+          { field: "username", message: "length needs to be greater than 5" },
+        ],
+      };
+    }
+    if (options.password.length <= 5) {
+      return {
+        errors: [
+          { field: "password", message: "length needs to be greater than 5" },
+        ],
+      };
+    }
     const hashPassword = await argon2.hash(options.password);
     const user = ctx.em.create(User, {
       username: options.username.toLowerCase(),
