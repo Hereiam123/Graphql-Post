@@ -15,7 +15,7 @@ const Register: React.FC<RegisterProps> = ({}) => {
           console.log(values);
         }}
       >
-        {(values, handleChange, isSubmitting) => (
+        {({ values, handleChange, isSubmitting }) => (
           <Form>
             <InputField
               name="username"
