@@ -2,9 +2,9 @@ import React from "react";
 import { Formik, Form } from "formik";
 import { FormControl, FormLabel, Input } from "@chakra-ui/react";
 
-interface registerProps {}
+interface RegisterProps {}
 
-const Register: React.FC<registerProps> = ({}) => {
+const Register: React.FC<RegisterProps> = ({}) => {
   return (
     <Formik
       initialValues={{ username: "", password: "" }}
