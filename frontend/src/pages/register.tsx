@@ -3,12 +3,12 @@ import { Formik, Form } from "formik";
 import { Box, Button } from "@chakra-ui/react";
 import Wrapper from "../components/Wrapper";
 import { InputField } from "../components/InputField";
-import { useMutation } from "urql";
+import { useRegisterMutation } from "../generated/graphql";
 
 interface RegisterProps {}
 
 const Register: React.FC<RegisterProps> = ({}) => {
-  const [registerResult, register] = useMutation(REGISTER_MUTATION);
+  const [registerResult, register] = useRegisterMutation();
   return (
     <Wrapper variant={"small"}>
       <Formik
@@ -46,19 +46,5 @@ const Register: React.FC<RegisterProps> = ({}) => {
     </Wrapper>
   );
 };
-
-const REGISTER_MUTATION = `
-  mutation Register($username: String!, $password: String!) {
-    register (options: {username: $username, password: $password}) {
-        user{
-        id
-        username
-        }
-        errors{
-                message
-        }
-    }
-  }
-`;
 
 export default Register;
