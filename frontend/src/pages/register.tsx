@@ -13,12 +13,11 @@ const Register: React.FC<RegisterProps> = ({}) => {
     <Wrapper variant={"small"}>
       <Formik
         initialValues={{ username: "", password: "" }}
-        onSubmit={(values) => {
-          console.log(values);
-          register(values);
+        onSubmit={async (values) => {
+          const response = await register(values);
         }}
       >
-        {({ values, handleChange, isSubmitting }) => (
+        {({ isSubmitting }) => (
           <Form>
             <InputField
               name="username"
@@ -49,11 +48,14 @@ const Register: React.FC<RegisterProps> = ({}) => {
 };
 
 const REGISTER_MUTATION = `
-  mutation ($username: String!, $password: String!) {
+  mutation Register($username: String!, $password: String!) {
     register (options: {username: $username, password: $password}) {
         user{
         id
         username
+        }
+        errors{
+                message
         }
     }
   }
