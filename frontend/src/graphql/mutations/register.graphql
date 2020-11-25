@@ -5,6 +5,7 @@ mutation Register($username: String!, $password: String!) {
       username
     }
     errors {
+      field
       message
     }
   }
