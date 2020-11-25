@@ -11,7 +11,7 @@ interface LoginProps {}
 
 const Login: React.FC<LoginProps> = ({}) => {
   const router = useRouter();
-  const [loginResult, login] = useLoginMutation();
+  const [, login] = useLoginMutation();
   return (
     <Wrapper variant={"small"}>
       <Formik
@@ -20,7 +20,7 @@ const Login: React.FC<LoginProps> = ({}) => {
           const response = await login({ options: values });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
-          } else if (response.data.login.user) {
+          } else if (response.data?.login.user) {
             //Got a user
             router.push("/");
           }
@@ -47,7 +47,7 @@ const Login: React.FC<LoginProps> = ({}) => {
               colorScheme="teal"
               isLoading={isSubmitting}
             >
-              Register
+              Login
             </Button>
           </Form>
         )}
