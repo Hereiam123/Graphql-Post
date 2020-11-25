@@ -5,10 +5,12 @@ import Wrapper from "../components/Wrapper";
 import { InputField } from "../components/InputField";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
+import { useRouter } from "next/router";
 
 interface RegisterProps {}
 
 const Register: React.FC<RegisterProps> = ({}) => {
+  const router = useRouter();
   const [registerResult, register] = useRegisterMutation();
   return (
     <Wrapper variant={"small"}>
@@ -18,6 +20,9 @@ const Register: React.FC<RegisterProps> = ({}) => {
           const response = await register(values);
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
+          } else if (response.data.register.user) {
+            //Got a user
+            router.push("/");
           }
         }}
       >
